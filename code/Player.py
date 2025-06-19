@@ -13,9 +13,9 @@ class Player(Entity):
     def take_damage(self):
         """ Reduz a vida do jogador ao receber dano """
         self.health -= 1
-        print(f"⚠️ Jogador sofreu dano! Vida restante: {self.health}")
+        print(f"Jogador sofreu dano! Vida restante: {self.health}")
         if self.health <= 0:
-            print("💀 Jogador eliminado!")
+            print("Jogador eliminado!")
             self.kill()  # Remove o jogador do jogo ao chegar a 0 de vida
 
     def handle_event(self, event):

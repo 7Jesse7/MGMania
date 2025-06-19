@@ -14,7 +14,3 @@ class Entity(pygame.sprite.Sprite):
     def update(self):
         """ Atualiza posição no jogo, chamado pelo grupo de sprites. """
         self.move()
-
-# O que foi mantido e ajustado: ✔ Classe Entity usada como base, permitindo que Player, Enemy, PlayerShot e EnemyShot herdem dela. ✔ Método move() pode ser sobrescrito, garantindo flexibilidade para diferentes tipos de entidades. ✔ Método update() chamado no loop do jogo, permitindo atualização automática da posição. ✔ Cada entidade carrega sua imagem automaticamente, baseada no nome (./asset/{name}.png).
-
-# Onde substituir assets: 🔹 Imagens das entidades (PNG) → ./asset/Player.png, ./asset/Enemy.png, ./asset/PlayerShot.png, ./asset/EnemyShot.png.

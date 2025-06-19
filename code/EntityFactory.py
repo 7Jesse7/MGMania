@@ -14,7 +14,3 @@ class EntityFactory:
         self.sprite_group.add(enemy)
         return enemy
 
-
-#O que foi ajustado: ✔ Criação automática de inimigos, gerando adversários no topo da tela. ✔ Posição aleatória, garantindo variação na movimentação dos inimigos. ✔ Integração com Enemy.py, permitindo que os inimigos se movimentem e ataquem corretamente.
-
-#Onde substituir assets: 🔹 Imagem dos inimigos (PNG) → ./asset/Enemy.png.

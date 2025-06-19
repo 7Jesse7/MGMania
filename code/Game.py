@@ -1,18 +1,21 @@
 import pygame
 import sys
 from code.Level import Level
-from code.Const import MENU_OPTION
+from code.Const import MENU_OPTION, WIN_WIDTH, WIN_HEIGHT
+from code.MenuBkp import Menu
+from code.Score import Score
+
 
 class Game:
     def __init__(self):
+        pygame.mixer.init()
         pygame.init()
-        self.window = pygame.display.set_mode((576, 324))
+        self.window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         pygame.display.set_caption("Megamania Inspired Game")
-
-
         self.clock = pygame.time.Clock()
 
     def run(self):
+        print("Entrou na tela de Score!")  # debug
         while True:
             menu_option = self.show_menu()  # Agora retorna um índice válido
 
@@ -25,31 +28,9 @@ class Game:
                 sys.exit()
 
     def show_menu(self):
-        background = pygame.image.load("../asset/Menu.png").convert_alpha()
-        font = pygame.font.Font(None, 40)
-        selected = 0
-
-        running = True
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        selected = max(0, selected - 1)
-                    elif event.key == pygame.K_DOWN:
-                        selected = min(len(MENU_OPTION) - 1, selected + 1)
-                    elif event.key == pygame.K_RETURN:
-                        return selected  # RETORNA o índice correto
-
-            self.window.blit(background, (0, 0))
-            for i, option in enumerate(MENU_OPTION):
-                color = (255, 255, 255) if i == selected else (150, 150, 150)
-                text = font.render(option, True, color)
-                self.window.blit(text, (250, 150 + i * 40))
-
-            pygame.display.flip()
+        menu = Menu(self.window)
+        opcao = menu.run()
+        return MENU_OPTION.index(opcao) if opcao in MENU_OPTION else 2  # fallback: exit
 
     def start_game(self):
         level = Level(self.window)
@@ -57,7 +38,6 @@ class Game:
 
     def show_score(self):
         # Exibir ranking de pontuação
+        score = Score(self.window)       #  Instancia a tela de score
+        score.run()                      #  Executa a exibição
         pass
-# O que foi ajustado: ✔ Tela de jogo com resolução fixa (576x324). ✔ Menu funcional com opções de iniciar jogo, visualizar score e sair. ✔ Chamada correta do Level.py para executar o jogo.
-
-# Onde substituir assets: 🔹 Imagem do menu (PNG) → ./asset/Menu.png. 🔹 Som do menu (MP3) → ./asset/Menu.mp3.

@@ -1,7 +1,9 @@
 import sqlite3
+import os
 
 class DBProxy:
     def __init__(self, db_name: str):
+        os.makedirs("data", exist_ok=True)  #  Cria a pasta se não existir
         self.conn = sqlite3.connect(f'./data/{db_name}.db')
         self.cursor = self.conn.cursor()
         self.__initialize_db()
@@ -35,7 +37,3 @@ class DBProxy:
 
     def close(self):
         self.conn.close()
-
-# O que foi mantido e ajustado: ✔ Banco de dados SQLite3 funcionando corretamente para salvar scores. ✔ Sistema de ranking Top 10 para mostrar os melhores jogadores. ✔ O banco de dados é inicializado automaticamente se não existir (__initialize_db). ✔ Função save() para armazenar nome, score e data.
-
-# Onde substituir assets: 🔹 Banco de dados → O arquivo .db será criado automaticamente dentro do diretório ./data/.

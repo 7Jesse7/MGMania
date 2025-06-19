@@ -7,7 +7,7 @@ from code.EnemyShot import EnemyShot
 from code.Player import Player
 from code.Enemy import Enemy
 from code.EntityFactory import EntityFactory
-from code.Const import EVENT_ENEMY, WIN_WIDTH, WIN_HEIGHT, GAME_DURATION
+from code.Const import EVENT_ENEMY, WIN_WIDTH, WIN_HEIGHT, GAME_DURATION, SPAWN_TIME
 from code.PlayerShot import PlayerShot
 
 
@@ -16,6 +16,7 @@ class Level:
         self.window = window
         self.clock = pygame.time.Clock()
         self.running = True
+        self.background = pygame.image.load("../asset/Background.png").convert()
 
         # Grupo de sprites para renderização
         self.all_sprites = pygame.sprite.Group()
@@ -28,7 +29,7 @@ class Level:
         self.entity_factory = EntityFactory(self.all_sprites)
 
         # Evento de spawn automático de inimigos a cada intervalo
-        pygame.time.set_timer(EVENT_ENEMY, 2000)  # Inimigos surgem a cada 2 segundos
+        pygame.time.set_timer(EVENT_ENEMY, SPAWN_TIME)  # Inimigos surgem a cada 2 segundos
 
         # Inicializa Score e temporizador
         self.score = 0
@@ -36,11 +37,11 @@ class Level:
         self.start_time = pygame.time.get_ticks()  # Marca o início do jogo
         self.time_remaining = GAME_DURATION  # Tempo total definido
 
-
-
-
-
     def run(self):
+        pygame.mixer.music.load('../asset/Level.mp3')
+        pygame.mixer.music.set_volume(0.4)
+        pygame.mixer.music.play(-1)
+
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -51,7 +52,8 @@ class Level:
 
                 self.player.handle_event(event)
 
-            self.window.fill((0, 0, 0))
+            #self.window.fill((0, 0, 0))
+            self.window.blit(self.background, (0, 0))
 
             # Atualiza o tempo restante
             current_time = (pygame.time.get_ticks() - self.start_time) // 1000
@@ -60,15 +62,18 @@ class Level:
             # Se o tempo acabar, exibe "YOU WIN" e permite inserir nome
             if self.time_remaining <= 0:
                 self.window.fill((0, 0, 0))
-                win_text = self.font.render("YOU WIN! Enter your name (5 characters):", True, (0, 255, 0))
-                self.window.blit(win_text, (WIN_WIDTH // 2 - 150, WIN_HEIGHT // 2 - 20))
+                win_text = self.font.render("YOU WIN!", True, (0, 255, 0))
+                self.window.blit(win_text, (WIN_WIDTH // 2 - 80, WIN_HEIGHT // 2 - 60))
+                #sub_text = self.font.render("Enter your name (5 characters):", True, (255, 255, 255))
+                #self.window.blit(sub_text, (WIN_WIDTH // 2 - 150, WIN_HEIGHT // 2))
                 pygame.display.flip()
+                pygame.time.delay(1500)
 
                 # Captura entrada do nome do jogador
                 player_name = self.get_player_name()
-                print(f"✅ Salvando score: {player_name} - {self.score}")  # Debug para verificar chamada
+                print(f"Salvando score: {player_name} - {self.score}")  # Debug para verificar chamada
                 self.save_score(player_name, self.score)  # Salva score no banco
-                print("✅ Score salvo no banco!")  # Confirmação da execução
+                print("Score salvo no banco!")  # Confirmação da execução
                 return  # Volta ao menu inicial após salvar
 
             # Se o jogador perdeu todas as vidas, exibe "YOU LOSE" e aguarda input
@@ -76,14 +81,18 @@ class Level:
                 game_over_text = self.font.render("YOU LOSE - Press any key to return", True, (255, 0, 0))
                 self.window.blit(game_over_text, (WIN_WIDTH // 2 - 150, WIN_HEIGHT // 2 - 20))
                 pygame.display.flip()
+                pygame.time.delay(1500)
 
                 # Espera input do jogador antes de voltar ao menu
                 waiting = True
                 while waiting:
                     for event in pygame.event.get():
-                        if event.type == pygame.KEYDOWN:
+                        if event.type == pygame.QUIT:
+                            pygame.quit()
+                            sys.exit()
+                        elif event.type == pygame.KEYDOWN:
                             waiting = False
-                            return  # Volta para o menu inicial
+                            return
 
             # Verifica colisões
             for enemy_shot in self.all_sprites:
@@ -104,7 +113,14 @@ class Level:
                         self.score += 10  # Aumenta Score ao eliminar inimigo
 
             # Atualiza e desenha todos os sprites na tela
+            # Atualiza e desenha todos os sprites na tela
             self.all_sprites.update()
+
+            # Remove inimigos que saem da parte de baixo da tela
+            for enemy in self.all_sprites:
+                if isinstance(enemy, Enemy) and enemy.rect.top > WIN_HEIGHT:
+                    enemy.kill()
+
             self.all_sprites.draw(self.window)
 
             # Exibe Score e tempo na tela
@@ -125,7 +141,11 @@ class Level:
         input_name = ""
         while len(input_name) < 5:
             for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()  # Fecha o jogo corretamente se clicar no X
+
+                elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN and len(input_name) == 5:
                         return input_name  # Retorna nome ao pressionar ENTER
                     elif event.key == pygame.K_BACKSPACE:
@@ -134,7 +154,7 @@ class Level:
                         input_name += event.unicode.upper()
 
             self.window.fill((0, 0, 0))
-            name_text = self.font.render(f"Your Name: {input_name}", True, (255, 255, 255))
+            name_text = self.font.render(f"Your Name (5 characters): {input_name}", True, (255, 255, 255))
             self.window.blit(name_text, (WIN_WIDTH // 2 - 150, WIN_HEIGHT // 2))
             pygame.display.flip()
 
@@ -143,7 +163,7 @@ class Level:
 
     def save_score(self, player_name, score):
         """ Salva o nome e pontuação do jogador no banco de dados """
-        conn = sqlite3.connect("game_scores.db")
+        conn = sqlite3.connect("./data/game_scores.db")
         cursor = conn.cursor()
 
         # Cria tabela se não existir

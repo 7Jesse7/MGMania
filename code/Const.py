@@ -49,7 +49,7 @@ ENTITY_SHOT_DELAY = {
 }
 
 # duração do jogo
-GAME_DURATION = 20  # Tempo total do jogo em segundos
+GAME_DURATION = 35  # Tempo total do jogo em segundos
 
 
 # Opções do Menu
@@ -61,15 +61,15 @@ PLAYER_KEY_RIGHT = pygame.K_RIGHT
 PLAYER_KEY_SHOOT = pygame.K_SPACE
 
 # Tempo para spawn de inimigos
-SPAWN_TIME = 2500
+SPAWN_TIME = 400
 
 # Tempo limite do nível
 TIMEOUT_STEP = 100
-TIMEOUT_LEVEL = 30000
+TIMEOUT_LEVEL = 100000
 
 # Tamanho da janela
 WIN_WIDTH = 576
-WIN_HEIGHT = 324
+WIN_HEIGHT = 800 #324
 
 # Posições do Score
 SCORE_POS = {
@@ -88,8 +88,3 @@ SCORE_POS = {
     8: (WIN_WIDTH / 2, 270),
     9: (WIN_WIDTH / 2, 290),
 }
-
-
-#O que foi ajustado: ✔ Movimentação do jogador apenas na horizontal (K_LEFT e K_RIGHT). ✔ Sistema de tiro com K_SPACE, semelhante ao estilo arcade. ✔ Velocidade e tempo de recarga ajustados para maior equilíbrio. ✔ Tempo de spawn dos inimigos reduzido, tornando o jogo mais dinâmico. ✔ Pontuação e dano dos inimigos ajustados para uma experiência mais fiel ao Megamania.
-
-# Onde substituir assets: 🔹 Imagens (PNG) → ./asset/Background.png, ./asset/Player.png, ./asset/Enemy.png. 🔹 Sons (MP3) → ./asset/Shoot.mp3, ./asset/Explosion.mp3, ./asset/Menu.mp3.
