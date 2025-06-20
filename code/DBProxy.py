@@ -1,10 +1,12 @@
 import sqlite3
 import os
+from utils import resource_path
+
 
 class DBProxy:
     def __init__(self, db_name: str):
         os.makedirs("data", exist_ok=True)  #  Cria a pasta se não existir
-        self.conn = sqlite3.connect(f'./data/{db_name}.db')
+        self.conn = sqlite3.connect(resource_path(f"data/{db_name}.db"))
         self.cursor = self.conn.cursor()
         self.__initialize_db()
 

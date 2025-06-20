@@ -2,6 +2,7 @@ import pygame
 import sys
 import sqlite3
 import datetime
+import os
 
 from code.EnemyShot import EnemyShot
 from code.Player import Player
@@ -9,6 +10,8 @@ from code.Enemy import Enemy
 from code.EntityFactory import EntityFactory
 from code.Const import EVENT_ENEMY, WIN_WIDTH, WIN_HEIGHT, GAME_DURATION, SPAWN_TIME
 from code.PlayerShot import PlayerShot
+from utils import resource_path
+
 
 
 class Level:
@@ -16,7 +19,8 @@ class Level:
         self.window = window
         self.clock = pygame.time.Clock()
         self.running = True
-        self.background = pygame.image.load("../asset/Background.png").convert()
+        self.background = pygame.image.load(resource_path("asset/Background.png")).convert()
+
 
         # Grupo de sprites para renderização
         self.all_sprites = pygame.sprite.Group()
@@ -38,7 +42,7 @@ class Level:
         self.time_remaining = GAME_DURATION  # Tempo total definido
 
     def run(self):
-        pygame.mixer.music.load('../asset/Level.mp3')
+        pygame.mixer.music.load(resource_path("asset/Level.mp3"))
         pygame.mixer.music.set_volume(0.4)
         pygame.mixer.music.play(-1)
 
@@ -160,21 +164,35 @@ class Level:
 
         return input_name
 
-
     def save_score(self, player_name, score):
         """ Salva o nome e pontuação do jogador no banco de dados """
-        conn = sqlite3.connect("./data/game_scores.db")
+        # Garante que a pasta 'data/' exista
+        db_path = resource_path("data")
+        os.makedirs(db_path, exist_ok=True)
+
+        # Caminho completo do arquivo do banco
+        db_file = os.path.join(db_path, "game_scores.db")
+
+        conn = sqlite3.connect(db_file)
         cursor = conn.cursor()
 
         # Cria tabela se não existir
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS scores (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                score INTEGER,
-                date TEXT
-            )
-        """)
+                       CREATE TABLE IF NOT EXISTS scores
+                       (
+                           id
+                           INTEGER
+                           PRIMARY
+                           KEY
+                           AUTOINCREMENT,
+                           name
+                           TEXT,
+                           score
+                           INTEGER,
+                           date
+                           TEXT
+                       )
+                       """)
         # Insere novo registro
         current_date = datetime.datetime.now().strftime("%d/%m")
         cursor.execute("INSERT INTO scores (name, score, date) VALUES (?, ?, ?)",

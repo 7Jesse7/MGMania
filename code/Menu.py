@@ -7,6 +7,8 @@ import pygame.mixer
 from code.Const import MENU_OPTION, WIN_WIDTH
 from code.Background import Background
 from code.Score import Score
+from utils import resource_path
+
 
 
 class Menu:
@@ -20,7 +22,7 @@ class Menu:
         running = True
 
         pygame.mixer.init()
-        pygame.mixer.music.load('asset/Menu.mp3')
+        pygame.mixer.music.load(resource_path('asset/Menu.mp3'))
         pygame.mixer.music.set_volume(0.3)
         pygame.mixer.music.play(-1)  # toca indefinidamente
 

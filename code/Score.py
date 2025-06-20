@@ -2,6 +2,8 @@ import pygame
 import sys
 import os
 from code.DBProxy import DBProxy
+from utils import resource_path
+
 
 class Score:
     def __init__(self, window):
@@ -9,12 +11,12 @@ class Score:
         self.font = pygame.font.Font(None, 24)
 
         # Caminho seguro e compatível com diferentes sistemas operacionais
-        bg_path = os.path.join(os.path.dirname(__file__), '..', 'asset', 'ScoreBg.png')
-        if not os.path.exists(bg_path):
+        bg_path = resource_path("asset/ScoreBg.png")
+        try:
+            self.background = pygame.image.load(bg_path).convert()
+        except FileNotFoundError:
             print(f"Imagem de fundo não encontrada em {bg_path}")
             self.background = None
-        else:
-            self.background = pygame.image.load(bg_path).convert()
 
         self.db = DBProxy("game_scores")
 

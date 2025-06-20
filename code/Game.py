@@ -2,7 +2,7 @@ import pygame
 import sys
 from code.Level import Level
 from code.Const import MENU_OPTION, WIN_WIDTH, WIN_HEIGHT
-from code.MenuBkp import Menu
+from code.Menu import Menu
 from code.Score import Score
 
 
